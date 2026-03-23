@@ -166,8 +166,8 @@ def predict():
             'recommendedExercise': recommended_exercise,
             'input_data': {
                 'accuracy': accuracy,
-                'focus_duration': focus_duration,
-                'movement_score': movement_score
+                'focus_duration': focus,
+                'movement_score': mov
             },
             'model_type': 'trained' if ml_model.model is not None else 'rule_based'
         }

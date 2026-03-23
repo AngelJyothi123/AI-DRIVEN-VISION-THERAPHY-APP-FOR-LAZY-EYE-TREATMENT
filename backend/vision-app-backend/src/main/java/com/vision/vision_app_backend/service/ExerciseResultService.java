@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,9 @@ public class ExerciseResultService {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Value("${ai.service.url}")
+    private String aiServiceBaseUrl;
 
     public ExerciseResultResponse saveExerciseResult(ExerciseResultRequest request) {
         ExerciseResult result = new ExerciseResult();
@@ -40,7 +44,7 @@ public class ExerciseResultService {
         
         // ML Response enrichment (Ephemeral recommendations for UI overlay)
         try {
-            String mlServiceUrl = "http://localhost:5000/predict";
+            String mlServiceUrl = aiServiceBaseUrl + "/predict";
             MLRequest mlRequest = new MLRequest();
             mlRequest.setAccuracy(request.getAccuracy());
             mlRequest.setFocusDuration(request.getFocusDuration());
@@ -56,7 +60,7 @@ public class ExerciseResultService {
 
     private Double callMLService(ExerciseResultRequest request) {
         try {
-            String mlServiceUrl = "http://localhost:5000/predict";
+            String mlServiceUrl = aiServiceBaseUrl + "/predict";
             
             MLRequest mlRequest = new MLRequest();
             mlRequest.setAccuracy(request.getAccuracy());
