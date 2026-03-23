@@ -1,0 +1,39 @@
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backend (Java/Spring Boot)
+backend/*/target/
+backend/**/target/
+*.class
+.factorypath
+.project
+.settings/
+.classpath
+
+# Frontend (React/Vite)
+frontend/**/node_modules/
+frontend/**/dist/
+frontend/**/*.local
+frontend/**/.env
+
+# AI Service (Python)
+ai-service/venv/
+ai-service/__pycache__/
+ai-service/*.pyc
+ai-service/*.pkl
+ai-service/.pytest_cache/
+
+# Logs
+*.log
+logs/
+
+# Tmp
+tmp/
+.gemini/

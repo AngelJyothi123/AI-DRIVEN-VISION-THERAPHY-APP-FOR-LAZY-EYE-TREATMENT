@@ -1,0 +1,10 @@
+$content = Get-Content 'src\main\java\com\vision\vision_app_backend\config\JwtFilter.java' -Raw
+$content = $content -replace 'String role = claims.get\(" role\\, String\.class\);', 'String role = claims.get("role", String.class);'
+$content = $content -replace 'email,', 'username,'
+$content = $content -replace 'authentication,', 'auth,'
+$content = $content -replace 'SecurityContextHolder\.getContext\(\)\.setAuthentication\(authentication\);', 'SecurityContextHolder.getContext().setAuthentication(auth);'
+$content = $content -replace '// 🔥 ADD ROLE HERE', ''
+$content = $content -replace 'SimpleGrantedAuthority authority =', ''
+$content = $content -replace 'new SimpleGrantedAuthority\("ROLE_" \+ role\)', 'new SimpleGrantedAuthority(role)'
+$content = $content -replace 'List\.of\(authority\)', 'List.of(new SimpleGrantedAuthority(role))'
+$content | Set-Content 'src\main\java\com\vision\vision_app_backend\config\JwtFilter.java'
