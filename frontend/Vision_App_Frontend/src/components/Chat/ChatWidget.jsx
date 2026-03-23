@@ -13,6 +13,9 @@ const ChatWidget = () => {
     const [contacts, setContacts] = useState([]);
     const [selectedContact, setSelectedContact] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showLabel, setShowLabel] = useState(true);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [lastKnownMessageCount, setLastKnownMessageCount] = useState(0);
     const scrollRef = useRef(null);
 
     // Initial Load: Fetch contacts
@@ -37,6 +40,10 @@ const ChatWidget = () => {
             }
         };
         loadContacts();
+
+        // Welcome label timer
+        const timer = setTimeout(() => setShowLabel(false), 5000);
+        return () => clearTimeout(timer);
     }, [isAuthenticated, role]);
 
     // Polling for messages
@@ -56,6 +63,23 @@ const ChatWidget = () => {
         const interval = setInterval(fetchMessages, 3000);
         return () => clearInterval(interval);
     }, [isOpen, selectedContact]);
+
+    // Track unread messages
+    useEffect(() => {
+        if (isOpen) {
+            setUnreadCount(0);
+            setLastKnownMessageCount(messages.length);
+        } else {
+            if (messages.length > lastKnownMessageCount) {
+                const newMessages = messages.filter((m, i) => i >= lastKnownMessageCount);
+                const othersMessages = newMessages.filter(m => (role === 'DOCTOR' && m.senderRole === 'PATIENT') || (role === 'PATIENT' && m.senderRole === 'DOCTOR'));
+                if (othersMessages.length > 0) {
+                    setUnreadCount(prev => prev + othersMessages.length);
+                }
+                setLastKnownMessageCount(messages.length);
+            }
+        }
+    }, [messages, isOpen, role, lastKnownMessageCount]);
 
     // Scroll to bottom on new messages
     useEffect(() => {
@@ -175,14 +199,27 @@ const ChatWidget = () => {
             {/* Toggle Button */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center space-x-2 p-4 rounded-2xl border transition shadow-2xl transform active:scale-95 ${
+                title="Clinical Support"
+                className={`flex items-center p-4 rounded-2xl border transition shadow-2xl transform active:scale-95 group relative ${
                     isOpen 
                     ? 'bg-gray-800 text-white border-gray-700 translate-y-[-10px]' 
                     : 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-700 hovr:translate-y-[-5px]'
                 }`}
             >
-                {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
-                {!isOpen && <span className="font-bold text-sm pr-2">Clinical Support</span>}
+                <div className="relative">
+                    {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
+                    {!isOpen && unreadCount > 0 && (
+                        <div className="absolute -top-6 -right-5 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white animate-bounce">
+                            {unreadCount}
+                        </div>
+                    )}
+                </div>
+                
+                {!isOpen && (
+                    <div className={`overflow-hidden transition-all duration-700 ease-in-out flex items-center ${showLabel ? 'max-w-xs' : 'max-w-0 group-hover:max-w-xs'}`}>
+                        <span className="font-bold text-sm pr-2 whitespace-nowrap pl-2">Clinical Support</span>
+                    </div>
+                )}
             </button>
         </div>
     );
