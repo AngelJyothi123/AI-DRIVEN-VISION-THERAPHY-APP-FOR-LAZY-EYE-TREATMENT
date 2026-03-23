@@ -35,7 +35,9 @@ const RegisterDoctor = () => {
       } else if (err.response?.data?.message) {
         setError(err.response.data.message);
       } else if (err.message === 'Network Error') {
-        setError('Network Error: Make sure the backend server (localhost:8080) is running and CORS is enabled.');
+        const hostname = window.location.hostname;
+        const apiUrl = import.meta.env.VITE_API_URL || `http://${hostname}:8080/api`;
+        setError(`Network Error: Cannot connect to ${apiUrl}. Ensure the backend is running and CORS allows this origin.`);
       } else {
         setError(err.message || 'Registration failed. Please try again.');
       }
