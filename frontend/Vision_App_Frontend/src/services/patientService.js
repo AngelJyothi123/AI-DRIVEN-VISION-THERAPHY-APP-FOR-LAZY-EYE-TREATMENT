@@ -24,5 +24,11 @@ export const patientService = {
   bookAppointment: async (data) => {
     const response = await api.post('/patient/appointments/book', data);
     return response.data;
+  },
+  downloadCertificate: async () => {
+    const response = await api.get('/patient/reports/certificate', {
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };

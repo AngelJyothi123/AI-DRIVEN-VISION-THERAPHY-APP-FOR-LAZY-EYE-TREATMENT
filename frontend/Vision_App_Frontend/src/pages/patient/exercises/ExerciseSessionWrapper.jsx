@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../../../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import EyeTrackingExercise from './EyeTrackingExercise';
 import PatternMatchingExercise from './PatternMatchingExercise';
@@ -14,14 +14,8 @@ export default function ExerciseSessionWrapper() {
     const handleExerciseComplete = async (metrics) => {
         setIsSubmitting(true);
         try {
-            const token = localStorage.getItem('token');
             // Ping Spring Boot endpoint to record session and proxy to Python ML
-            const response = await axios.post(
-                'http://localhost:8080/api/patient/end-session',
-                metrics,
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            
+            const response = await api.post('/patient/end-session', metrics);
             setResult(response.data);
             
         } catch (error) {
